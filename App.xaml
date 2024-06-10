@@ -1,0 +1,26 @@
+﻿<Application x:Class="VPNProject.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:VPNProject"
+             xmlns:view="clr-namespace:VPNProject.View"
+             xmlns:vms="clr-namespace:VPNProject.ViewModel"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!---Themes Sources-->
+                <ResourceDictionary Source="/Themes/TitlebarButton.Nord.xaml"/>
+                <ResourceDictionary Source="/Themes/MenuButtons.Nord.xaml"/>
+                <ResourceDictionary Source="/Themes/ConnectButton.Nord.xaml"/>
+                <ResourceDictionary Source="/Themes/ServerListTheme.Nord.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate DataType="{x:Type vms:ProtectionViewModel}">
+                <view:ProtectionView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:SettingsViewModel}">
+                <view:SettingsView/>
+            </DataTemplate>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
