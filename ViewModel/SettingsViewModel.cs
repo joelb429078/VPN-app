@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 using FireSharp.Config;
 using FireSharp.Interfaces;
 using FireSharp.Response;
+using VPNproject.Windows;
 
-using VPNProject.Windows;
-
-
-namespace VPNProject.ViewModel
+namespace VPNproject.ViewModel
 {
     internal class SettingsViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<ServerModel> Servers { get; set; }
+
         private ObservableCollection<ServerModel> _filteredServers;
         public ObservableCollection<ServerModel> FilteredServers
         {
@@ -25,7 +24,7 @@ namespace VPNProject.ViewModel
             set
             {
                 _filteredServers = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(FilteredServers));
             }
         }
 
@@ -36,16 +35,42 @@ namespace VPNProject.ViewModel
             set
             {
                 _searchQuery = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(SearchQuery));
                 FilterServers();
             }
         }
 
+        private ServerModel _selectedServer;
+        public ServerModel SelectedServer
+        {
+            get { return _selectedServer; }
+            set
+            {
+                _selectedServer = value;
+                OnPropertyChanged(nameof(SelectedServer));
+            }
+        }
+
+        private bool _isDarkMode;
+        public bool IsDarkMode
+        {
+            get { return _isDarkMode; }
+            set
+            {
+                _isDarkMode = value;
+                OnPropertyChanged(nameof(IsDarkMode));
+                ToggleTheme();
+            }
+        }
+
+        public ICommand DeleteServerCommand { get; }
+        public ICommand ToggleThemeCommand { get; }
+
         // Firebase configuration
         private IFirebaseConfig config = new FirebaseConfig
         {
-            AuthSecret = "UkpGDcuqjkmyJwyE3bniiN0G81xWAC8PFd2nRKGg", // firebase authentication secret
-            BasePath = "https://vpnproject-7ec25-default-rtdb.europe-west1.firebasedatabase.app/" // firebase URL
+            AuthSecret = "UkpGDcuqjkmyJwyE3bniiN0G81xWAC8PFd2nRKGg",
+            BasePath = "https://vpnproject-7ec25-default-rtdb.europe-west1.firebasedatabase.app/"
         };
 
         private IFirebaseClient client;
@@ -55,7 +80,10 @@ namespace VPNProject.ViewModel
             InitialiseFirebaseClient();
             Servers = new ObservableCollection<ServerModel>();
             FilteredServers = new ObservableCollection<ServerModel>();
-            FetchServersFromFirebase().Wait();
+            FetchServersFromFirebase().ConfigureAwait(false);
+
+            DeleteServerCommand = new RelayCommand<ServerModel>(DeleteServer);
+            ToggleThemeCommand = new RelayCommand<object>(param => IsDarkMode = !IsDarkMode);
         }
 
         private void InitialiseFirebaseClient()
@@ -71,9 +99,6 @@ namespace VPNProject.ViewModel
         {
             try
             {
-                //reinitialising Firebase client in case of network changes --> i.e. VPN connection established
-                InitialiseFirebaseClient();
-
                 FirebaseResponse response = await client.GetTaskAsync("servers");
                 if (response.Body != "null")
                 {
@@ -81,17 +106,7 @@ namespace VPNProject.ViewModel
                     Servers.Clear();
                     foreach (var server in data.Values)
                     {
-                        //Setting the flag URL based on the country
-                        server.FlagImageUrl = server.Country switch
-                        {
-                            "US" => "https://i.imgur.com/tX2FzGr.png",
-                            "Canada" => "https://i.imgur.com/VIxuFmK.png",
-                            "UK" => "https://i.imgur.com/QW2YV9c.png",
-                            "Poland" => "https://i.imgur.com/k6ie3Ra.png",
-                            "Germany" => "https://i.imgur.com/l66r6qD.png",
-                            "France" => "https://i.imgur.com/XohHXyD.png",
-                            _ => "https://i.imgur.com/tX2FzGr.png"
-                        };
+                        server.FlagImageUrl = GetFlagImageUrl(server.Country);
                         Servers.Add(server);
                     }
                     FilterServers();
@@ -101,6 +116,20 @@ namespace VPNProject.ViewModel
             {
                 Console.WriteLine($"Error fetching servers from Firebase: {ex.Message}");
             }
+        }
+
+        private string GetFlagImageUrl(string country)
+        {
+            return country switch
+            {
+                "US" => "https://i.imgur.com/tX2FzGr.png",
+                "Canada" => "https://i.imgur.com/VIxuFmK.png",
+                "UK" => "https://i.imgur.com/QW2YV9c.png",
+                "Poland" => "https://i.imgur.com/k6ie3Ra.png",
+                "Germany" => "https://i.imgur.com/l66r6qD.png",
+                "France" => "https://i.imgur.com/XohHXyD.png",
+                _ => "https://i.imgur.com/tX2FzGr.png"
+            };
         }
 
         private void FilterServers()
@@ -121,21 +150,25 @@ namespace VPNProject.ViewModel
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged(string name)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        private ServerModel _selectedServer;
-        public ServerModel SelectedServer
+        private void ToggleTheme()
         {
-            get { return _selectedServer; }
-            set
-            {
-                _selectedServer = value;
-                OnPropertyChanged();
-            }
+            var theme = IsDarkMode ? "DarkTheme.Nord.xaml" : "LightTheme.Nord.xaml";
+            var uri = new Uri($"/Themes/{theme}", UriKind.Relative);
+            var resourceDict = Application.LoadComponent(uri) as ResourceDictionary;
+
+            Application.Current.Resources.MergedDictionaries.Clear();
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Themes/ToggleButton.Nord.xaml", UriKind.Relative) });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Themes/SettingsServerListTheme.Nord.xaml", UriKind.Relative) });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Themes/MenuButtons.Nord.xaml", UriKind.Relative) });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Themes/ConnectButton.Nord.xaml", UriKind.Relative) });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Themes/TitlebarButton.Nord.xaml", UriKind.Relative) });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Themes/ServerListTheme.Nord.xaml", UriKind.Relative) });
+            Application.Current.Resources.MergedDictionaries.Add(resourceDict);
         }
 
         public void ShowPopupWindow(ServerModel selectedServer)
@@ -146,7 +179,8 @@ namespace VPNProject.ViewModel
                 Username = selectedServer?.Username ?? string.Empty,
                 Password = selectedServer?.Password ?? string.Empty,
                 Server = selectedServer?.Server ?? string.Empty,
-                Country = selectedServer?.Country ?? string.Empty
+                Country = selectedServer?.Country ?? string.Empty,
+                IsEditMode = selectedServer != null
             };
 
             viewModel.OnSubmitAction = () =>
@@ -176,11 +210,11 @@ namespace VPNProject.ViewModel
             popupWindow.ShowDialog();
         }
 
-
         private async void UpdateServerInFirebase(string serverId, string username, string password, string server, string country)
         {
             var serverData = new ServerModel
             {
+                ID = int.Parse(serverId),
                 Username = username,
                 Password = password,
                 Server = server,
@@ -194,7 +228,6 @@ namespace VPNProject.ViewModel
 
         private async void AddServerToFirebase(string username, string password, string server, string country)
         {
-            // Fetch existing servers to determine the new ID
             FirebaseResponse response = await client.GetTaskAsync("servers");
             var data = response.ResultAs<Dictionary<string, ServerModel>>();
             int newId = data.Count + 1;
@@ -206,14 +239,23 @@ namespace VPNProject.ViewModel
                 Password = password,
                 Server = server,
                 Country = country,
-                //FlagImageUrl = GetFlagUrl(country)
+                FlagImageUrl = GetFlagUrl(country)
             };
 
             await client.UpdateTaskAsync($"servers/{newId}", serverData);
             await FetchServersFromFirebase();
         }
 
-        //getting the right flag!
+        private async void DeleteServer(ServerModel server)
+        {
+            if (server != null)
+            {
+                await client.DeleteTaskAsync($"servers/{server.ID}");
+                Servers.Remove(server);
+                FilterServers();
+            }
+        }
+
         private string GetFlagUrl(string country)
         {
             return country switch
@@ -226,6 +268,34 @@ namespace VPNProject.ViewModel
                 "France" => "https://i.imgur.com/XohHXyD.png",
                 _ => "https://i.imgur.com/tX2FzGr.png"
             };
+        }
+    }
+
+    public class RelayCommand<T> : ICommand
+    {
+        private readonly Action<T> _execute;
+        private readonly Func<T, bool> _canExecute;
+
+        public RelayCommand(Action<T> execute, Func<T, bool> canExecute = null)
+        {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return _canExecute == null || _canExecute((T)parameter);
+        }
+
+        public void Execute(object parameter)
+        {
+            _execute((T)parameter);
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
         }
     }
 }

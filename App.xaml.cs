@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace VPNProject
+namespace VPNproject
 {
     /// <summary>
     /// Interaction logic for App.xaml

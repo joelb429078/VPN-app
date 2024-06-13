@@ -12,17 +12,18 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using VPNProject.ViewModel;
-using VPNProject.Windows;
+using VPNproject.ViewModel;
 
-namespace VPNProject.View
+namespace VPNproject.View
 {
+    /// <summary>
+    /// Interaction logic for SettingsView.xaml
+    /// </summary>
     public partial class SettingsView : UserControl
     {
         public SettingsView()
         {
             InitializeComponent();
-            DataContext = new SettingsViewModel();
         }
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
