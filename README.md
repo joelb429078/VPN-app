@@ -33,7 +33,7 @@ JB-VPN is a VPN application I developed in C# using Windows Presentation Foundat
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/jb-vpn.git
+   git clone https://github.com/joelb429078/VPN-app.git
    
 2. Open the solution file in Visual Studio.
 
