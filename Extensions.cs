@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 using System.Windows;
 
 
-//Adding dependencies --> iccons 
-namespace VPNProject
+namespace VPNproject
 {
     internal class Extensions
     {
-        public static readonly DependencyProperty Icon = 
+        public static readonly DependencyProperty Icon =
             DependencyProperty.RegisterAttached("Icon", typeof(string), typeof(Extensions), new PropertyMetadata(default(string)));
 
         public static void SetIcon(UIElement element, string value)

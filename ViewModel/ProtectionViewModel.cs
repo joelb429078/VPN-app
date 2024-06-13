@@ -14,7 +14,7 @@ using FireSharp.Interfaces;
 using FireSharp.Response;
 
 
-namespace VPNProject.ViewModel
+namespace VPNproject.ViewModel
 {
     internal class ProtectionViewModel : ObservableObject
     {
@@ -22,7 +22,7 @@ namespace VPNProject.ViewModel
 
 
         //Firebase connection stuff
-        private IFirebaseConfig config = new FirebaseConfig 
+        private IFirebaseConfig config = new FirebaseConfig
         {
             AuthSecret = "UkpGDcuqjkmyJwyE3bniiN0G81xWAC8PFd2nRKGg", //firebase authentication secret also removed - add your own one if downloading and testing from github!
             BasePath = "https://vpnproject-7ec25-default-rtdb.europe-west1.firebasedatabase.app/" //firebase link removed for privacy reasons!
@@ -120,63 +120,63 @@ namespace VPNProject.ViewModel
             ServerBuilder();
 
             Task.Run(() =>
+            {
+                ConnectionStatus = $"Connecting to {SelectedServer.Country} Server...";
+                var process = new Process();
+                process.StartInfo.FileName = "cmd.exe";
+                process.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
+
+                string entryName = SelectedServer.Server;
+                string username = SelectedServer.Username;
+                string password = SelectedServer.Password;
+                string phoneBookPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "VPN", $"{SelectedServer.Server}.pbk"));
+                string arguments = $@"/c rasdial MyServer {username} {password} /phonebook:{phoneBookPath}";
+                process.StartInfo.Arguments = arguments;
+
+
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+
+                process.Start();
+
+                string output = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
+
+                process.WaitForExit();
+
+                //paths & arguments for rasdial & pbk
+                Debug.WriteLine($"Phonebook Path: {phoneBookPath}");
+                Debug.WriteLine($"Arguments: {arguments}");
+
+
+
+                //Debug - error & outputs for debugg
+                Debug.WriteLine("Output: " + output);
+                Debug.WriteLine("Error: " + error);
+
+                //connection checking based on output and exit code
+                if (process.ExitCode == 0 && output.Contains("Command completed successfully."))
                 {
-                    ConnectionStatus = $"Connecting to {SelectedServer.Country} Server...";
-                    var process = new Process();
-                    process.StartInfo.FileName = "cmd.exe";
-                    process.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
-
-                    string entryName = SelectedServer.Server;
-                    string username = SelectedServer.Username;
-                    string password = SelectedServer.Password;
-                    string phoneBookPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "VPN", $"{SelectedServer.Server}.pbk"));
-                    string arguments = $@"/c rasdial MyServer {username} {password} /phonebook:{phoneBookPath}";
-                    process.StartInfo.Arguments = arguments;
-
-
-                    process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.CreateNoWindow = true;
-                    process.StartInfo.RedirectStandardOutput = true;
-                    process.StartInfo.RedirectStandardError = true;
-
-                    process.Start();
-
-                    string output = process.StandardOutput.ReadToEnd();
-                    string error = process.StandardError.ReadToEnd();
-
-                    process.WaitForExit();
-
-                    //paths & arguments for rasdial & pbk
-                    Debug.WriteLine($"Phonebook Path: {phoneBookPath}");
-                    Debug.WriteLine($"Arguments: {arguments}");
-
-
-
-                    //Debug - error & outputs for debugg
-                    Debug.WriteLine("Output: " + output);
-                    Debug.WriteLine("Error: " + error);
-
-                    //connection checking based on output and exit code
-                    if (process.ExitCode == 0 && output.Contains("Command completed successfully."))
+                    Debug.WriteLine("Success!");
+                    ConnectionStatus = "Connected!";
+                }
+                else
+                {
+                    switch (process.ExitCode)
                     {
-                        Debug.WriteLine("Success!");
-                        ConnectionStatus = "Connected!";
+                        case 691:
+                            Debug.WriteLine("Wrong credentials!");
+                            ConnectionStatus = "Wrong credentials!";
+                            break;
+                        default:
+                            Debug.WriteLine($"Error: {process.ExitCode}, {error}");
+                            ConnectionStatus = $"Error: {process.ExitCode}";
+                            break;
                     }
-                    else
-                    {
-                        switch (process.ExitCode)
-                        {
-                            case 691:
-                                Debug.WriteLine("Wrong credentials!");
-                                ConnectionStatus = "Wrong credentials!";
-                                break;
-                            default:
-                                Debug.WriteLine($"Error: {process.ExitCode}, {error}");
-                                ConnectionStatus = $"Error: {process.ExitCode}";
-                                break;
-                        }
-                    }
-                });
+                }
+            });
         }
 
         private void ServerBuilder()

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace VPNProject.Windows
+namespace VPNproject.Windows
 {
     public partial class VpnFormWindow : Window
     {

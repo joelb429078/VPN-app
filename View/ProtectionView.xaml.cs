@@ -12,10 +12,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using VPNProject.ViewModel;
 
-namespace VPNProject.View
+namespace VPNproject.View
 {
+    /// <summary>
+    /// Interaction logic for ProtectionView.xaml
+    /// </summary>
     public partial class ProtectionView : UserControl
     {
         public ProtectionView()

@@ -1,8 +1,8 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using System;
+using System.ComponentModel;
 using System.Windows.Input;
 
-namespace VPNProject.ViewModel
+namespace VPNproject.ViewModel
 {
     public class VpnFormViewModel : INotifyPropertyChanged
     {
@@ -10,29 +10,68 @@ namespace VPNProject.ViewModel
         private string _password;
         private string _server;
         private string _country;
+        private bool _isEditMode;
+        private string _submitButtonText;
 
         public string Username
         {
             get { return _username; }
-            set { _username = value; OnPropertyChanged(); }
+            set
+            {
+                _username = value;
+                OnPropertyChanged(nameof(Username));
+            }
         }
 
         public string Password
         {
             get { return _password; }
-            set { _password = value; OnPropertyChanged(); }
+            set
+            {
+                _password = value;
+                OnPropertyChanged(nameof(Password));
+            }
         }
 
         public string Server
         {
             get { return _server; }
-            set { _server = value; OnPropertyChanged(); }
+            set
+            {
+                _server = value;
+                OnPropertyChanged(nameof(Server));
+            }
         }
 
         public string Country
         {
             get { return _country; }
-            set { _country = value; OnPropertyChanged(); }
+            set
+            {
+                _country = value;
+                OnPropertyChanged(nameof(Country));
+            }
+        }
+
+        public bool IsEditMode
+        {
+            get { return _isEditMode; }
+            set
+            {
+                _isEditMode = value;
+                OnPropertyChanged(nameof(IsEditMode));
+                SubmitButtonText = value ? "Edit" : "Add";
+            }
+        }
+
+        public string SubmitButtonText
+        {
+            get { return _submitButtonText; }
+            set
+            {
+                _submitButtonText = value;
+                OnPropertyChanged(nameof(SubmitButtonText));
+            }
         }
 
         public ICommand SubmitCommand { get; }
@@ -41,6 +80,7 @@ namespace VPNProject.ViewModel
         public VpnFormViewModel()
         {
             SubmitCommand = new RelayCommand(OnSubmit);
+            SubmitButtonText = "Add";
         }
 
         private void OnSubmit(object parameter)
@@ -50,7 +90,7 @@ namespace VPNProject.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

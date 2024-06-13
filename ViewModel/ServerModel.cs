@@ -5,11 +5,11 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VPNProject.ViewModel
+namespace VPNproject.ViewModel
 {
     public class ServerModel
     {
-        public int ID {  get; set; }
+        public int ID { get; set; }
         public string Username { get; set; }
 
         public string Password { get; set; }
@@ -19,8 +19,6 @@ namespace VPNProject.ViewModel
         public string Country { get; set; }
 
         public string FlagImageUrl { get; set; }
-
-
 
         /*extras for adding further more customised servers
         public string Email { get; set; }

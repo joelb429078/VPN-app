@@ -16,12 +16,10 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Background" Value="Gray"/>
             </Trigger>
         </Style.Triggers>
-
     </Style>
 </ResourceDictionary>
