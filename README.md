@@ -14,20 +14,21 @@ JB-VPN is a VPN application I developed in C# using Windows Presentation Foundat
 
 ## Screenshots
 
-### Main Page (Dark Mode)
- ![mainpage1(Dark)](https://github.com/joelb429078/VPN-app/assets/160978621/ec05f764-ca7a-4baf-810f-f79ec8f5e981)
-
 ### Main Page (Light Mode)
 ![mainpage1(Light)](https://github.com/joelb429078/VPN-app/assets/160978621/027f90b9-e456-4d9c-afb1-94f0bc7485ca)
+
+### Settings Page (Light Mode)
+![mainpage2(Light)](https://github.com/joelb429078/VPN-app/assets/160978621/b8db444d-50a9-452e-b7d6-7826bb1b4415)
 
 ### Add VPN Server Form
 ![mainpage(Add)](https://github.com/joelb429078/VPN-app/assets/160978621/a7b9e988-6310-4c01-a964-95b405474819) 
 
+### Main Page (Dark Mode)
+ ![mainpage1(Dark)](https://github.com/joelb429078/VPN-app/assets/160978621/ec05f764-ca7a-4baf-810f-f79ec8f5e981)
+
 ### Settings Page (Dark Mode)
 ![mainpage2(Dark)](https://github.com/joelb429078/VPN-app/assets/160978621/fbf13bc4-995e-4127-8fff-23aa4eef8747)
 
-### Settings Page (Light Mode)
-![mainpage2(Light)](https://github.com/joelb429078/VPN-app/assets/160978621/b8db444d-50a9-452e-b7d6-7826bb1b4415)
 
 ## Installation
 
