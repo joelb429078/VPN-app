@@ -1,3 +1,6 @@
+
+  ![CoverImage](https://github.com/joelb429078/VPN-app/assets/160978621/31c581fa-8c7b-40b4-bdc5-ebcdfb9cdb07)
+
   # JB-VPN
 
 JB-VPN is a VPN application I developed in C# using Windows Presentation Foundation (WPF). This project provides a user-friendly interface for managing VPN connections with features such as server list management, and theme customisation (Dark/Light mode).
@@ -6,7 +9,7 @@ JB-VPN is a VPN application I developed in C# using Windows Presentation Foundat
 
 - **Server List Management**: Easily add, edit, and remove VPN servers from the list.
 - **Dark/Light Mode**: Switch between Dark and Light themes for a better user experience.
-- **Settings Page**: Customize the application settings and manage your VPN servers.
+- **Settings Page**: Customise the application settings and manage your VPN servers.
 - **Responsive UI**: A modern and responsive user interface.
 
 ## Screenshots
