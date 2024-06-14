@@ -3,7 +3,7 @@
 
   # JB-VPN
 
-JB-VPN is a VPN application I developed in C# using Windows Presentation Foundation (WPF). This project provides a user-friendly interface for managing VPN connections with features such as server list management, and theme customisation (Dark/Light mode).
+JB-VPN is a VPN application I developed in C# using Windows Presentation Foundation (WPF). This project provides a user-friendly interface for managing VPN connections with features such as server list management, and theme customisation (Dark/Light mode). All server information is stored on a Google Firebase database.
 
 ## Features
 
